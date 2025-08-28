@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AniHUB - Premium Anime Streaming</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .container {
+      animation: fadeIn 2s ease-in-out;
+      width: 90%;
+      max-width: 500px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      animation: glow 2s infinite alternate;
+    }
+
+    p {
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+    }
+
+    .gif-loader {
+      width: 180px;
+      margin: 20px auto;
+    }
+
+    .progress-container {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      overflow: hidden;
+      height: 18px;
+      width: 80%;
+      margin: 15px auto;
+    }
+
+    .progress-bar {
+      background: linear-gradient(90deg, #ffdd57, #ff3860);
+      height: 100%;
+      width: 0%;
+      border-radius: 20px;
+      transition: width 1s linear;
+    }
+
+    .countdown {
+      font-size: 1.3rem;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+
+    @keyframes glow {
+      from { text-shadow: 0 0 10px #fff, 0 0 20px #2575fc, 0 0 30px #6a11cb; }
+      to { text-shadow: 0 0 20px #fff, 0 0 40px #2575fc, 0 0 60px #6a11cb; }
+    }
+
+    a {
+      color: #ffd369;
+      text-decoration: none;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>✨ Welcome to AniHUB ✨</h1>
+    <p>Please wait while we redirect you to our server...</p>
+    
+    <!-- Giphy Loader -->
+    <div class="gif-loader">
+      <img src="https://media.giphy.com/media/6LDnuado66EEMLihSG/giphy.gif" alt="Loading..." width="100%">
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-container">
+      <div class="progress-bar" id="progress"></div>
+    </div>
+    
+    <p class="countdown">Redirecting in <span id="timer">10</span> seconds...</p>
+    <p>If you are not redirected automatically, <a href="/server.html">click here</a>.</p>
+  </div>
+
+  <script>
+    let timeLeft = 10;
+    const timerElement = document.getElementById("timer");
+    const progressBar = document.getElementById("progress");
+
+    const countdown = setInterval(() => {
+      timeLeft--;
+      timerElement.textContent = timeLeft;
+      progressBar.style.width = ((10 - timeLeft) * 10) + "%";
+
+      if (timeLeft <= 0) {
+        clearInterval(countdown);
+        window.location.href = "/server.html";
+      }
+    }, 1000);
+  </script>
+</body>
+</html>

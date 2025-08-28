@@ -1,0 +1,3504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AniHUB - Watch Anime Online</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --secondary: #8b5cf6;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            
+            --bg-dark: #0f0f23;
+            --bg-card: #1a1a2e;
+            --bg-light: #16213e;
+            --bg-hover: #252545;
+            
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1aa;
+            --text-muted: #6b7280;
+            
+            --border: #374151;
+            --border-light: #4b5563;
+            
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+            
+            --radius: 8px;
+            --radius-lg: 12px;
+            
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 15, 35, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        .nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            padding: 0.5rem 0;
+            position: relative;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--primary);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+
+        .search-container {
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .search-container.collapsed {
+            width: 40px;
+            height: 40px;
+        }
+
+        .search-container.expanded {
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .search-container.collapsed .search-input {
+            opacity: 0;
+            width: 0;
+            padding: 0;
+            border: none;
+            pointer-events: none;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            cursor: pointer;
+            z-index: 10;
+            transition: var(--transition);
+        }
+
+        .search-container.collapsed .search-icon {
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--text-primary);
+            background: var(--bg-card);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border);
+        }
+
+        .search-container.collapsed .search-icon:hover {
+            background: var(--bg-hover);
+            border-color: var(--primary);
+        }
+
+        .search-close {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            cursor: pointer;
+            opacity: 0;
+            transition: var(--transition);
+            z-index: 10;
+        }
+
+        .search-container.expanded .search-close {
+            opacity: 1;
+        }
+
+        .search-close:hover {
+            color: var(--text-primary);
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            margin-top: 0.5rem;
+            max-height: 400px;
+            overflow-y: auto;
+            z-index: 1001;
+            display: none;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .search-result {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .search-result:hover {
+            background: var(--bg-hover);
+        }
+
+        .search-result:last-child {
+            border-bottom: none;
+        }
+
+        .search-result-image {
+            width: 40px;
+            height: 56px;
+            border-radius: var(--radius);
+            object-fit: cover;
+            background: var(--bg-light);
+        }
+
+        .search-result-info h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .search-result-info p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .mobile-menu {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.25rem;
+            cursor: pointer;
+        }
+
+        /* Main Content */
+        .main {
+            margin-top: 70px;
+            min-height: calc(100vh - 70px);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 4rem 1rem;
+            text-align: center;
+            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-light) 100%);
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero-title {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1rem, 2.5vw, 1.25rem);
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-search {
+            max-width: 500px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .hero-search-input {
+            width: 100%;
+            padding: 1rem 1.5rem 1rem 3rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-lg);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .hero-search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+        }
+
+        .hero-search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        /* Content Sections */
+        .section {
+            padding: 3rem 1rem;
+        }
+
+        .section-alt {
+            background: var(--bg-card);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .section-title {
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            font-weight: 700;
+            color: var(--text-primary);
+            position: relative;
+            padding-left: 1rem;
+        }
+
+        .section-title::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+        }
+
+        .view-all {
+            background: none;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-lg);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .view-all:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Anime Grid */
+        .anime-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .anime-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: var(--transition);
+            cursor: pointer;
+            border: 1px solid var(--border);
+        }
+
+        .anime-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary);
+        }
+
+        .anime-poster {
+            position: relative;
+            aspect-ratio: 3/4;
+            overflow: hidden;
+            background: var(--bg-light);
+        }
+
+        .anime-poster img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .anime-card:hover .anime-poster img {
+            transform: scale(1.05);
+        }
+
+        .anime-status {
+            position: absolute;
+            top: 0.5rem;
+            left: 0.5rem;
+            background: var(--success);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--radius);
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .anime-rating {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(0, 0, 0, 0.8);
+            color: var(--warning);
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--radius);
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .play-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .anime-card:hover .play-overlay {
+            opacity: 1;
+        }
+
+        .play-button {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .play-button:hover {
+            transform: scale(1.1);
+        }
+
+        .anime-info {
+            padding: 1rem;
+        }
+
+        .anime-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .anime-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .anime-genres {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+        }
+
+        .genre-tag {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+            padding: 0.125rem 0.5rem;
+            border-radius: var(--radius);
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        /* Video Player */
+        .video-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-dark);
+            display: none;
+            z-index: 2000;
+            overflow-y: auto;
+        }
+
+        .video-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem;
+            min-height: 100vh;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            max-width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            border: 2px solid var(--border);
+        }
+
+        .speed-meter {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 0.5rem 0.75rem;
+            border-radius: var(--radius);
+            font-size: 0.8rem;
+            font-weight: 600;
+            z-index: 200;
+            display: block;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .buffering-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius-lg);
+            font-size: 0.9rem;
+            font-weight: 600;
+            z-index: 150;
+            display: none;
+            text-align: center;
+        }
+
+        .buffering-spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 0.5rem;
+        }
+
+        .video-player {
+            width: 100%;
+            height: 100%;
+        }
+
+        .video-loading {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(99, 102, 241, 0.2);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        .loading-text {
+            color: var(--primary);
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .loading-status {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .loading-progress {
+            width: 240px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .loading-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .video-info {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .video-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+
+        .video-meta {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .controls-section {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .server-controls {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .server-label {
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+
+        .server-btn {
+            background: var(--bg-light);
+            border: 2px solid var(--border);
+            color: var(--text-secondary);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .server-btn:hover {
+            border-color: var(--primary);
+            color: var(--text-primary);
+        }
+
+        .server-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .episode-controls {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .episode-btn {
+            background: var(--bg-light);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .episode-btn:hover {
+            background: var(--bg-hover);
+            border-color: var(--primary);
+        }
+
+        .episode-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .controls-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .server-controls, .subtitle-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .control-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 500;
+            min-width: 70px;
+        }
+
+        .server-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .subtitle-controls, .quality-controls {
+            margin-bottom: 0;
+        }
+
+        .subtitle-select, .quality-select {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            color: var(--text-primary);
+            padding: 0.5rem;
+            font-size: 0.9rem;
+            min-width: 150px;
+            cursor: pointer;
+        }
+
+        .subtitle-select:focus, .quality-select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .quality-select option {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        @media (max-width: 768px) {
+            .controls-row {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+
+            .server-controls, .subtitle-controls {
+                justify-content: space-between;
+                width: 100%;
+            }
+
+            .control-label {
+                min-width: auto;
+            }
+
+            .server-buttons {
+                flex: 1;
+                justify-content: flex-end;
+            }
+
+            .subtitle-select {
+                flex: 1;
+                max-width: 200px;
+            }
+        }
+
+        .close-video {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(0, 0, 0, 0.8);
+            border: none;
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2001;
+        }
+
+        .close-video:hover {
+            background: var(--error);
+            transform: scale(1.05);
+        }
+
+        /* Episodes Sidebar */
+        .episodes-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+
+        .episodes-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .episodes-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .episodes-count {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .episodes-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .episode-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .episode-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .episode-item.active {
+            background: rgba(99, 102, 241, 0.1);
+            border-left: 4px solid var(--primary);
+        }
+
+        .episode-item:last-child {
+            border-bottom: none;
+        }
+
+        .episode-number {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .episode-title {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            line-height: 1.3;
+            flex: 1;
+        }
+
+        /* Loading States */
+        .loading-state {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+
+        .loading-state .loading-spinner {
+            width: 24px;
+            height: 24px;
+            border-width: 3px;
+            margin-right: 0.75rem;
+            margin-bottom: 0;
+        }
+
+        .error-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
+        }
+
+        .error-state i {
+            font-size: 2rem;
+            color: var(--error);
+            margin-bottom: 1rem;
+        }
+
+        /* Responsive Design */
+        @media (min-width: 768px) {
+            .anime-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+
+            .controls-section {
+                grid-template-columns: 1fr 1fr;
+                align-items: center;
+            }
+
+            .episodes-list {
+                max-height: 400px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .anime-grid {
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            }
+
+            .video-layout {
+                grid-template-columns: 1fr 350px;
+                gap: 1.5rem;
+            }
+
+            .video-info {
+                margin-top: 0;
+            }
+
+            .episodes-panel {
+                margin-top: 0;
+                flex: 1;
+            }
+
+            .episodes-list {
+                max-height: 500px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav {
+                padding: 0.75rem 1rem;
+                flex-wrap: wrap;
+                gap: 1rem;
+                position: relative;
+            }
+
+            .nav-links {
+                position: absolute;
+                top: calc(100% + 1px);
+                right: 0;
+                width: 200px;
+                background: var(--bg-card);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                flex-direction: column;
+                padding: 0.25rem 0;
+                box-shadow: var(--shadow-md);
+                z-index: 1000;
+                transform: translateY(-10px);
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.2s ease;
+            }
+
+            @keyframes slideInItem {
+                from {
+                    opacity: 0;
+                    transform: translateX(-10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+
+            .nav-links.show {
+                display: flex;
+                transform: translateY(0);
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .nav-links li {
+                margin: 0;
+            }
+
+            .nav-links .nav-link {
+                display: block;
+                padding: 0.5rem 0.75rem;
+                color: var(--text-secondary);
+                text-decoration: none;
+                font-weight: 400;
+                font-size: 0.85rem;
+                transition: var(--transition);
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+
+            .nav-links.show .nav-link:nth-child(1) {
+                animation: slideInItem 0.3s ease forwards;
+                animation-delay: 0.1s;
+            }
+
+            .nav-links.show .nav-link:nth-child(2) {
+                animation: slideInItem 0.3s ease forwards;
+                animation-delay: 0.2s;
+            }
+
+            .nav-links.show .nav-link:nth-child(3) {
+                animation: slideInItem 0.3s ease forwards;
+                animation-delay: 0.3s;
+            }
+
+            .nav-links.show .nav-link:nth-child(4) {
+                animation: slideInItem 0.3s ease forwards;
+                animation-delay: 0.4s;
+            }
+
+            .nav-links.show .user-menu {
+                animation: slideInItem 0.3s ease forwards;
+                animation-delay: 0.5s;
+            }
+
+            .nav-links .nav-link:hover,
+            .nav-links .nav-link.active {
+                background: var(--primary);
+                color: white;
+            }
+
+            .nav-links .nav-link::after {
+                display: none;
+            }
+
+            .nav-links .user-menu {
+                margin-left: 0;
+                padding: 0.5rem 0.75rem;
+                border-top: 1px solid var(--border);
+                margin-top: 0;
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+
+            .nav-links .user-menu .user-avatar {
+                margin-bottom: 0.5rem;
+            }
+
+            .nav-links .user-menu .user-dropdown {
+                position: static;
+                display: block !important;
+                background: none;
+                border: none;
+                box-shadow: none;
+                padding: 0;
+                margin: 0;
+            }
+
+            .nav-links .user-menu .user-dropdown-item {
+                padding: 0.35rem 0;
+                font-size: 0.8rem;
+                color: var(--text-secondary);
+            }
+
+            .nav-links .user-menu .user-dropdown-item:hover {
+                color: var(--primary);
+            }
+
+            .nav-links .user-menu .user-dropdown-item.logout {
+                border-top: 1px solid var(--border);
+                margin-top: 0.35rem;
+                padding-top: 0.5rem;
+                color: #ef4444;
+            }
+
+            .mobile-menu {
+                display: block;
+                z-index: 1001;
+            }
+
+
+            .search-container.collapsed {
+                width: 40px;
+                height: 40px;
+            }
+
+            .search-container.expanded {
+                flex: 1;
+                max-width: none;
+                order: 3;
+                width: 100%;
+            }
+
+            .hero {
+                padding: 2rem 1rem;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .section {
+                padding: 2rem 1rem;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .anime-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 1rem;
+            }
+
+            .anime-card {
+                min-height: auto;
+            }
+
+            .anime-poster {
+                aspect-ratio: 3/4;
+            }
+
+            .anime-info {
+                padding: 0.75rem;
+            }
+
+            .anime-title {
+                font-size: 0.85rem;
+                line-height: 1.3;
+                -webkit-line-clamp: 2;
+            }
+
+            .anime-meta {
+                font-size: 0.75rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .genre-tag {
+                font-size: 0.65rem;
+                padding: 0.1rem 0.4rem;
+            }
+
+            .episode-controls {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .server-controls {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .video-layout {
+                padding: 0.5rem;
+                gap: 1rem;
+            }
+
+            .video-info {
+                padding: 1rem;
+            }
+
+            .video-title {
+                font-size: 1.1rem;
+            }
+
+            .controls-section {
+                gap: 1rem;
+            }
+        }
+
+        /* Auth Modal */
+        .auth-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            backdrop-filter: blur(20px);
+            padding: 1rem;
+        }
+
+        .auth-container {
+            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-light) 100%);
+            border-radius: 20px;
+            padding: 0;
+            width: 100%;
+            max-width: 900px;
+            border: 1px solid var(--border-light);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 500px;
+        }
+
+        .auth-left {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 3rem 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-left::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1.5" fill="white" opacity="0.08"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.15"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            100% { transform: translateY(-100px) rotate(360deg); }
+        }
+
+        .auth-hero {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .auth-hero-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .auth-hero-subtitle {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .auth-features {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .auth-feature {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .auth-feature i {
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        .auth-right {
+            padding: 3rem 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .auth-tabs {
+            display: flex;
+            background: var(--bg-light);
+            border-radius: 12px;
+            padding: 0.25rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border);
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            background: none;
+            border: none;
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .auth-tab.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 2px 10px rgba(99, 102, 241, 0.3);
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-input:focus + .form-icon {
+            color: var(--primary);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .auth-button {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .auth-button:hover::before {
+            left: 100%;
+        }
+
+        .auth-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+        }
+
+        .auth-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .auth-error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--error);
+            border-radius: 10px;
+            color: var(--error);
+            padding: 0.875rem 1rem;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .auth-success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success);
+            border-radius: 10px;
+            color: var(--success);
+            padding: 0.875rem 1rem;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .auth-container {
+                grid-template-columns: 1fr;
+                max-width: 400px;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+            
+            .auth-left {
+                padding: 2rem 1.5rem;
+                min-height: 200px;
+            }
+            
+            .auth-hero-title {
+                font-size: 2rem;
+            }
+            
+            .auth-right {
+                padding: 2rem 1.5rem;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .user-menu {
+            position: relative;
+            display: none;
+        }
+        
+        .nav-links .user-menu {
+            margin-left: auto;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.05);
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 0.5rem 0;
+            margin-top: 0.5rem;
+            min-width: 200px;
+            box-shadow: var(--shadow-lg);
+            display: none;
+            z-index: 1000;
+        }
+
+        .user-dropdown.show {
+            display: block;
+        }
+
+        .user-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .user-dropdown-item:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .user-dropdown-item.logout {
+            color: var(--error);
+            border-top: 1px solid var(--border);
+            margin-top: 0.5rem;
+        }
+
+        /* Hide main content when not authenticated */
+        .content-locked {
+            filter: blur(5px);
+            user-select: none;
+        }
+        
+        .content-locked .hero-search-input,
+        .content-locked .search-input,
+        .content-locked .anime-card,
+        .content-locked button,
+        .content-locked a {
+            pointer-events: none;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-card);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header" id="header">
+        <nav class="nav">
+            <a href="#" class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-play"></i>
+                </div>
+                AniHUB
+            </a>
+            
+            <ul class="nav-links">
+                <li><a href="#home" class="nav-link active">Home</a></li>
+                <li><a href="#trending" class="nav-link">Trending</a></li>
+                <li><a href="#popular" class="nav-link">Popular</a></li>
+                <li><a href="#recent" class="nav-link">Recent</a></li>
+                <li class="user-menu" id="userMenu">
+                    <div class="user-avatar" id="userAvatar">U</div>
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="user-dropdown-item">
+                            <i class="fas fa-user"></i>
+                            <span id="userName">User Name</span>
+                        </div>
+                        <div class="user-dropdown-item logout" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            
+            <button class="mobile-menu" id="mobileMenu">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Hero Section -->
+        <section class="hero" id="home">
+            <div class="hero-content">
+                <h1 class="hero-title">AniHUB</h1>
+                <p class="hero-subtitle">Your ultimate anime streaming destination. Watch thousands of anime series and movies in high quality.</p>
+                <div class="hero-search">
+                    <i class="fas fa-search hero-search-icon"></i>
+                    <input type="text" class="hero-search-input" placeholder="Search for anime..." id="searchInput">
+                    <div class="search-results" id="searchResults"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Trending Section -->
+        <section class="section" id="trending">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Trending Now</h2>
+                    <a href="#" class="view-all">
+                        View All <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="anime-grid" id="trendingGrid">
+                    <div class="loading-state">
+                        <div class="loading-spinner"></div>
+                        Loading trending anime...
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Popular Section -->
+        <section class="section section-alt" id="popular">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Most Popular</h2>
+                    <a href="#" class="view-all">
+                        View All <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="anime-grid" id="popularGrid">
+                    <div class="loading-state">
+                        <div class="loading-spinner"></div>
+                        Loading popular anime...
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recent Section -->
+        <section class="section" id="recent">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Recently Updated</h2>
+                    <a href="#" class="view-all">
+                        View All <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="anime-grid" id="recentGrid">
+                    <div class="loading-state">
+                        <div class="loading-spinner"></div>
+                        Loading recent updates...
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Video Modal -->
+    <div class="video-modal" id="videoModal">
+        <button class="close-video" onclick="closeVideoModal()">
+            <i class="fas fa-times"></i>
+        </button>
+        
+        <div class="video-layout">
+            <div class="video-main">
+                <div class="video-container">
+                    <video class="video-player" id="videoPlayer" controls></video>
+                    
+                    <div class="video-loading" id="videoLoading" style="display: none;">
+                        <div class="loading-spinner"></div>
+                        <div class="loading-status" id="loadingStatus">Loading video...</div>
+                        <div class="loading-progress">
+                            <div class="loading-progress-fill" id="loadingProgress"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="speed-meter" id="speedMeter">
+                        <i class="fas fa-tachometer-alt"></i> 0 KB/s
+                    </div>
+                    
+                    <div class="buffering-indicator" id="bufferingIndicator">
+                        <div class="buffering-spinner"></div>
+                        <div>Buffering...</div>
+                    </div>
+                </div>
+                
+                <div class="video-info">
+                    <h2 class="video-title" id="videoTitle">Episode Title</h2>
+                    <div class="video-meta">
+                        <span id="videoEpisode">Episode 1</span>
+                        <span>•</span>
+                        <span id="videoDate">2024</span>
+                        <span>•</span>
+                        <span>24 min</span>
+                    </div>
+                    
+                    <div class="controls-section">
+                        <div class="controls-row">
+                            <div class="server-controls">
+                                <span class="control-label">Server:</span>
+                                <div class="server-buttons">
+                                    <button class="server-btn active" data-server="hd-1">HD-1</button>
+                                    <button class="server-btn" data-server="megacloud">MegaCloud</button>
+                                    <button class="server-btn" data-server="hd-2">HD-2</button>
+                                </div>
+                            </div>
+
+                            <div class="quality-controls" id="qualityControls" style="display: none;">
+                                <span class="control-label">Quality:</span>
+                                <select id="qualitySelect" class="quality-select">
+                                    <option value="auto">Auto</option>
+                                </select>
+                            </div>
+
+                            <div class="subtitle-controls" id="subtitleControls" style="display: none;">
+                                <span class="control-label">Subtitles:</span>
+                                <select id="subtitleSelect" class="subtitle-select">
+                                    <option value="">No Subtitles</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="episode-controls">
+                            <button class="episode-btn" id="prevEpisode">
+                                <i class="fas fa-chevron-left"></i> Previous
+                            </button>
+                            <button class="episode-btn" id="nextEpisode">
+                                Next <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="video-sidebar">
+                <div class="episodes-panel">
+                    <div class="episodes-header">
+                        <h3 class="episodes-title">Episodes</h3>
+                        <span class="episodes-count" id="episodesCount">0 episodes</span>
+                    </div>
+                    <div class="episodes-list" id="episodesList">
+                        <!-- Episodes will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Authentication Modal -->
+    <div class="auth-modal" id="authModal">
+        <div class="auth-container">
+            <!-- Left Side - Hero Section -->
+            <div class="auth-left">
+                <div class="auth-hero">
+                    <h1 class="auth-hero-title">AniHUB</h1>
+                    <p class="auth-hero-subtitle">Your ultimate anime streaming destination with thousands of series and movies in high quality.</p>
+                    
+                    <ul class="auth-features">
+                        <li class="auth-feature">
+                            <i class="fas fa-play"></i>
+                            <span>Unlimited anime streaming</span>
+                        </li>
+                        <li class="auth-feature">
+                            <i class="fas fa-hd-video"></i>
+                            <span>HD & 4K quality videos</span>
+                        </li>
+                        <li class="auth-feature">
+                            <i class="fas fa-mobile-alt"></i>
+                            <span>Watch on any device</span>
+                        </li>
+                        <li class="auth-feature">
+                            <i class="fas fa-bookmark"></i>
+                            <span>Save your favorites</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Right Side - Form Section -->
+            <div class="auth-right">
+                <div class="auth-tabs">
+                    <button class="auth-tab active" id="signinTab" onclick="switchToSignin()">Sign In</button>
+                    <button class="auth-tab" id="signupTab" onclick="switchToSignup()">Sign Up</button>
+                </div>
+                
+                <div id="authError" class="auth-error" style="display: none;">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span id="authErrorText"></span>
+                </div>
+                <div id="authSuccess" class="auth-success" style="display: none;">
+                    <i class="fas fa-check-circle"></i>
+                    <span id="authSuccessText"></span>
+                </div>
+                
+                <form class="auth-form" id="authForm">
+                    <div class="form-group" id="nameFields" style="display: none;">
+                        <input type="text" class="form-input" id="username" placeholder="Username">
+                        <i class="fas fa-user form-icon"></i>
+                    </div>
+                    
+                    <div class="form-group">
+                        <input type="email" class="form-input" id="email" placeholder="Email address" required>
+                        <i class="fas fa-envelope form-icon"></i>
+                    </div>
+                    
+                    <div class="form-group">
+                        <input type="password" class="form-input" id="password" placeholder="Password" required>
+                        <i class="fas fa-lock form-icon"></i>
+                    </div>
+                    
+                    <button type="submit" class="auth-button" id="authSubmit">
+                        <span id="authButtonText">Sign In</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        const API_BASE_URL = window.location.origin;
+        let currentHls = null;
+        let searchTimeout = null;
+        let currentAnimeId = null;
+        let currentEpisodeIndex = 0;
+        let episodes = [];
+        let currentAnimeInfo = null;
+        let currentVideoSources = [];
+        let currentServer = 'hd-1';
+        let speedMeterInterval = null;
+        let lastBytesReceived = 0;
+        let lastTime = Date.now();
+        
+        // Auth variables
+        let currentUser = null;
+        let isSignUpMode = false;
+
+        // Global utility function
+        function updateLoadingStatus(message) {
+            const status = document.getElementById('loadingStatus');
+            if (status) {
+                status.textContent = message;
+            }
+        }
+
+        // Authentication functions
+        async function checkAuthStatus() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    currentUser = data.user;
+                    showAuthenticatedState();
+                    return true;
+                } else {
+                    showAuthModal();
+                    return false;
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                showAuthModal();
+                return false;
+            }
+        }
+
+        function showAuthenticatedState() {
+            document.getElementById('authModal').style.display = 'none';
+            document.getElementById('userMenu').style.display = 'block';
+            document.querySelector('.main').classList.remove('content-locked');
+            
+            if (currentUser) {
+                const username = currentUser.firstName || currentUser.email.split('@')[0];
+                document.getElementById('userAvatar').textContent = username[0].toUpperCase();
+                document.getElementById('userName').textContent = username;
+            }
+        }
+
+        function showAuthModal() {
+            document.getElementById('authModal').style.display = 'flex';
+            document.getElementById('userMenu').style.display = 'none';
+            document.querySelector('.main').classList.add('content-locked');
+        }
+
+        function switchToSignin() {
+            isSignUpMode = false;
+            const nameFields = document.getElementById('nameFields');
+            const authButtonText = document.getElementById('authButtonText');
+            const signinTab = document.getElementById('signinTab');
+            const signupTab = document.getElementById('signupTab');
+            
+            nameFields.style.display = 'none';
+            authButtonText.textContent = 'Sign In';
+            
+            signinTab.classList.add('active');
+            signupTab.classList.remove('active');
+            
+            clearAuthMessages();
+            clearForm();
+        }
+
+        function switchToSignup() {
+            isSignUpMode = true;
+            const nameFields = document.getElementById('nameFields');
+            const authButtonText = document.getElementById('authButtonText');
+            const signinTab = document.getElementById('signinTab');
+            const signupTab = document.getElementById('signupTab');
+            
+            nameFields.style.display = 'block';
+            authButtonText.textContent = 'Create Account';
+            
+            signupTab.classList.add('active');
+            signinTab.classList.remove('active');
+            
+            clearAuthMessages();
+            clearForm();
+        }
+
+        function clearForm() {
+            document.getElementById('username').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('password').value = '';
+        }
+
+        function clearAuthMessages() {
+            document.getElementById('authError').style.display = 'none';
+            document.getElementById('authSuccess').style.display = 'none';
+        }
+
+        function showAuthError(message) {
+            const errorEl = document.getElementById('authError');
+            const errorText = document.getElementById('authErrorText');
+            errorText.textContent = message;
+            errorEl.style.display = 'flex';
+            document.getElementById('authSuccess').style.display = 'none';
+        }
+
+        function showAuthSuccess(message) {
+            const successEl = document.getElementById('authSuccess');
+            const successText = document.getElementById('authSuccessText');
+            successText.textContent = message;
+            successEl.style.display = 'flex';
+            document.getElementById('authError').style.display = 'none';
+        }
+
+        async function handleAuth(e) {
+            e.preventDefault();
+            clearAuthMessages();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const submitBtn = document.getElementById('authSubmit');
+            const buttonText = document.getElementById('authButtonText');
+            
+            if (!email || !password) {
+                showAuthError('Please fill in all required fields');
+                return;
+            }
+            
+            if (isSignUpMode) {
+                const username = document.getElementById('username').value;
+                
+                if (!username) {
+                    showAuthError('Please enter a username');
+                    return;
+                }
+            }
+            
+            submitBtn.disabled = true;
+            buttonText.textContent = isSignUpMode ? 'Creating Account...' : 'Signing In...';
+            
+            try {
+                const endpoint = isSignUpMode ? '/api/auth/signup' : '/api/auth/signin';
+                const body = isSignUpMode ? {
+                    email,
+                    password,
+                    firstName: document.getElementById('username').value,
+                    lastName: ''
+                } : { email, password };
+                
+                const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(body)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    currentUser = data.user;
+                    showAuthSuccess(isSignUpMode ? 'Account created successfully!' : 'Welcome back!');
+                    setTimeout(() => {
+                        showAuthenticatedState();
+                        loadContent();
+                    }, 1000);
+                } else {
+                    showAuthError(data.message || 'Authentication failed');
+                }
+            } catch (error) {
+                console.error('Auth error:', error);
+                showAuthError('Network error. Please try again.');
+            } finally {
+                submitBtn.disabled = false;
+                buttonText.textContent = isSignUpMode ? 'Create Account' : 'Sign In';
+            }
+        }
+
+        async function logout() {
+            try {
+                await fetch(`${API_BASE_URL}/api/auth/logout`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                currentUser = null;
+                showAuthModal();
+                document.getElementById('userDropdown').classList.remove('show');
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            setupEventListeners();
+            checkAuthStatus().then(isAuthenticated => {
+                if (isAuthenticated) {
+                    loadContent();
+                }
+            });
+        });
+
+        function initializeApp() {
+            console.log('AniHUB Enhanced initialized');
+            
+            // Header scroll effect
+            window.addEventListener('scroll', function() {
+                const header = document.getElementById('header');
+                if (window.scrollY > 50) {
+                    header.style.background = 'rgba(15, 15, 35, 0.98)';
+                } else {
+                    header.style.background = 'rgba(15, 15, 35, 0.95)';
+                }
+            });
+        }
+
+        function setupEventListeners() {
+            // Authentication form
+            document.getElementById('authForm').addEventListener('submit', handleAuth);
+            
+            // Mobile menu toggle
+            document.getElementById('mobileMenu').addEventListener('click', function() {
+                const navLinks = document.querySelector('.nav-links');
+                navLinks.classList.toggle('show');
+            });
+            
+            // User menu dropdown (only for desktop)
+            document.getElementById('userAvatar').addEventListener('click', function(e) {
+                // Only toggle dropdown on desktop, not mobile
+                if (window.innerWidth > 768) {
+                    document.getElementById('userDropdown').classList.toggle('show');
+                }
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.user-menu') && window.innerWidth > 768) {
+                    document.getElementById('userDropdown').classList.remove('show');
+                }
+                
+                // Close mobile menu when clicking outside
+                if (!e.target.closest('.nav') && !e.target.closest('.mobile-menu')) {
+                    document.querySelector('.nav-links').classList.remove('show');
+                }
+            });
+            
+            // Search functionality
+            const searchInput = document.getElementById('searchInput');
+            
+            searchInput.addEventListener('input', handleSearch);
+            
+            // Close search results when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.hero-search')) {
+                    document.getElementById('searchResults').style.display = 'none';
+                }
+            });
+
+            // Quality selection
+            const qualitySelect = document.getElementById('qualitySelect');
+            if (qualitySelect) {
+                qualitySelect.addEventListener('change', function() {
+                    const selectedQuality = this.value;
+                    console.log('Quality changed to:', selectedQuality);
+                    switchVideoQuality(selectedQuality);
+                });
+            }
+
+            // Subtitle selection
+            const subtitleSelect = document.getElementById('subtitleSelect');
+            if (subtitleSelect) {
+                subtitleSelect.addEventListener('change', function() {
+                    const videoPlayer = document.getElementById('videoPlayer');
+                    const selectedTrack = this.value;
+                    
+                    // Remove existing text tracks
+                    Array.from(videoPlayer.textTracks).forEach(track => {
+                        track.mode = 'disabled';
+                    });
+                    
+                    if (selectedTrack) {
+                        const trackElement = videoPlayer.querySelector(`track[src="${selectedTrack}"]`);
+                        if (trackElement && trackElement.track) {
+                            trackElement.track.mode = 'showing';
+                        }
+                    }
+                });
+            }
+
+            // Navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const target = this.getAttribute('href').substring(1);
+                    if (target && target !== 'home') {
+                        const element = document.getElementById(target);
+                        if (element) {
+                            element.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    } else {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                });
+            });
+
+            // Server controls
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('server-btn')) {
+                    if (currentAnimeId && episodes.length > 0) {
+                        const episodeId = episodes[currentEpisodeIndex]?.episodeId;
+                        if (episodeId) {
+                            currentServer = e.target.dataset.server;
+                            loadEpisode(episodeId, currentServer);
+                        }
+                    }
+                }
+            });
+
+            // Episode controls
+            document.getElementById('prevEpisode').addEventListener('click', function() {
+                if (currentEpisodeIndex > 0) {
+                    currentEpisodeIndex--;
+                    const episodeId = episodes[currentEpisodeIndex]?.episodeId;
+                    if (episodeId) {
+                        const activeServer = document.querySelector('.server-btn.active')?.dataset.server || 'hd-1';
+                        loadEpisode(episodeId, activeServer);
+                        updateEpisodeSelection();
+                    }
+                }
+            });
+
+            document.getElementById('nextEpisode').addEventListener('click', function() {
+                if (currentEpisodeIndex < episodes.length - 1) {
+                    currentEpisodeIndex++;
+                    const episodeId = episodes[currentEpisodeIndex]?.episodeId;
+                    if (episodeId) {
+                        const activeServer = document.querySelector('.server-btn.active')?.dataset.server || 'hd-1';
+                        loadEpisode(episodeId, activeServer);
+                        updateEpisodeSelection();
+                    }
+                }
+            });
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeVideoModal();
+                }
+            });
+        }
+
+        function handleSearch(e) {
+            if (!currentUser) {
+                showAuthModal();
+                return;
+            }
+            
+            const query = e.target.value.trim();
+            const searchResults = document.getElementById('searchResults');
+            
+            if (searchTimeout) {
+                clearTimeout(searchTimeout);
+            }
+            
+            if (query.length < 2) {
+                searchResults.style.display = 'none';
+                return;
+            }
+            
+            searchTimeout = setTimeout(() => {
+                performSearch(query);
+            }, 300);
+        }
+
+        async function performSearch(query) {
+            const searchResults = document.getElementById('searchResults');
+            searchResults.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div> Searching...</div>';
+            searchResults.style.display = 'block';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/search?q=${encodeURIComponent(query)}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.message);
+                }
+                
+                displaySearchResults(data.animes || []);
+            } catch (error) {
+                console.error('Search error:', error);
+                searchResults.innerHTML = '<div class="error-state"><i class="fas fa-exclamation-triangle"></i><p>Search unavailable</p></div>';
+            }
+        }
+
+        function displaySearchResults(results) {
+            const searchResults = document.getElementById('searchResults');
+            
+            if (results.length === 0) {
+                searchResults.innerHTML = '<div style="padding: 1rem; text-align: center; color: var(--text-muted);">No results found</div>';
+                return;
+            }
+            
+            searchResults.innerHTML = results.slice(0, 8).map(anime => `
+                <div class="search-result" onclick="openAnime('${anime.id}')">
+                    <img src="${anime.poster || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNTYiIHZpZXdCb3g9IjAgMCA0MCA1NiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjU2IiBmaWxsPSIjMTYyMTNlIi8+Cjx0ZXh0IHg9IjIwIiB5PSIzMCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEwIiBmaWxsPSIjNmI3MjgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5ObyBJbWFnZTwvdGV4dD4KPC9zdmc+'}" 
+                         alt="${anime.name}" class="search-result-image"
+                         onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNTYiIHZpZXdCb3g9IjAgMCA0MCA1NiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjU2IiBmaWxsPSIjMTYyMTNlIi8+Cjx0ZXh0IHg9IjIwIiB5PSIzMCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEwIiBmaWxsPSIjNmI3MjgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5ObyBJbWFnZTwvdGV4dD4KPC9zdmc+'">
+                    <div class="search-result-info">
+                        <h4>${anime.name}</h4>
+                        <p>${anime.releaseDate || 'N/A'} • ${anime.type || 'TV'}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function loadContent() {
+            if (!currentUser) {
+                return;
+            }
+            try {
+                await Promise.allSettled([
+                    loadTrending(),
+                    loadPopular(),  
+                    loadRecent()
+                ]);
+            } catch (error) {
+                console.error('Error loading content:', error);
+            }
+        }
+
+        async function loadTrending() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/home`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.message);
+                }
+                
+                const trending = data.trendingAnimes || [];
+                displayAnimeGrid('trendingGrid', trending.slice(0, 12));
+            } catch (error) {
+                console.error('Error loading trending:', error);
+                document.getElementById('trendingGrid').innerHTML = '<div class="error-state"><i class="fas fa-exclamation-triangle"></i><p>Unable to load trending anime</p></div>';
+            }
+        }
+
+        async function loadPopular() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/home`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.message);
+                }
+                
+                const popular = data.mostPopularAnimes || [];
+                displayAnimeGrid('popularGrid', popular.slice(0, 12));
+            } catch (error) {
+                console.error('Error loading popular:', error);
+                document.getElementById('popularGrid').innerHTML = '<div class="error-state"><i class="fas fa-exclamation-triangle"></i><p>Unable to load popular anime</p></div>';
+            }
+        }
+
+        async function loadRecent() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/home`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.message);
+                }
+                
+                const recent = data.latestEpisodeAnimes || [];
+                displayAnimeGrid('recentGrid', recent.slice(0, 12));
+            } catch (error) {
+                console.error('Error loading recent:', error);
+                document.getElementById('recentGrid').innerHTML = '<div class="error-state"><i class="fas fa-exclamation-triangle"></i><p>Unable to load recent anime</p></div>';
+            }
+        }
+
+        function displayAnimeGrid(gridId, animeList) {
+            const grid = document.getElementById(gridId);
+            if (!grid) return;
+            
+            if (!animeList || animeList.length === 0) {
+                grid.innerHTML = '<div class="error-state"><p>No anime available</p></div>';
+                return;
+            }
+            
+            grid.innerHTML = animeList.map(anime => createAnimeCard(anime)).join('');
+        }
+
+        function createAnimeCard(anime) {
+            const status = anime.type || 'TV';
+            const rating = '8.5'; // Default rating
+            const fallbackImage = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQwIiBoZWlnaHQ9IjMyMCIgdmlld0JveD0iMCAwIDI0MCAzMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyNDAiIGhlaWdodD0iMzIwIiBmaWxsPSIjMTYyMTNlIi8+Cjx0ZXh0IHg9IjEyMCIgeT0iMTcwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM2YjcyODAiIHRleHQtYW5jaG9yPSJtaWRkbGUiPk5vIEltYWdlPC90ZXh0Pgo8L3N2Zz4=";
+            
+            return `
+                <div class="anime-card" onclick="openAnime('${anime.id}')">
+                    <div class="anime-poster">
+                        <img src="${anime.poster || fallbackImage}" 
+                             alt="${anime.name}" loading="lazy"
+                             onerror="this.src='${fallbackImage}'">
+                        <div class="anime-status">${status}</div>
+                        <div class="anime-rating">
+                            <i class="fas fa-star"></i> ${rating}
+                        </div>
+                        <div class="play-overlay">
+                            <button class="play-button">
+                                <i class="fas fa-play"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="anime-info">
+                        <h3 class="anime-title">${anime.name}</h3>
+                        <div class="anime-meta">
+                            <span>${anime.releaseDate || 'N/A'}</span>
+                            <span>${anime.type || 'TV'}</span>
+                        </div>
+                        <div class="anime-genres">
+                            ${(anime.genres || ['Action', 'Adventure']).slice(0, 3).map(genre => 
+                                `<span class="genre-tag">${genre}</span>`
+                            ).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function openAnime(animeId) {
+            currentAnimeId = animeId;
+            
+            try {
+                showNotification('Loading anime...', 'info');
+                
+                // Get anime info and episodes in parallel
+                const [infoResponse, episodesResponse] = await Promise.all([
+                    fetch(`${API_BASE_URL}/api/info?id=${animeId}`),
+                    fetch(`${API_BASE_URL}/api/episodes/${animeId}`)
+                ]);
+                
+                if (!infoResponse.ok || !episodesResponse.ok) {
+                    throw new Error('Failed to fetch anime data');
+                }
+                
+                const [infoData, episodesData] = await Promise.all([
+                    infoResponse.json(),
+                    episodesResponse.json()
+                ]);
+                
+                if (infoData.error) {
+                    throw new Error(infoData.message);
+                }
+                
+                if (episodesData.error) {
+                    throw new Error(episodesData.message);
+                }
+                
+                currentAnimeInfo = infoData.anime;
+                episodes = episodesData.episodes || [];
+                currentEpisodeIndex = 0;
+                
+                console.log('Loaded anime info:', currentAnimeInfo);
+                console.log('Anime name:', currentAnimeInfo?.name);
+                console.log('Full info data structure:', infoData);
+                
+                if (episodes.length > 0) {
+                    openVideoModal();
+                    // Extract anime name from the correct data structure
+                    const animeName = currentAnimeInfo?.info?.name || 
+                                    currentAnimeInfo?.name || 
+                                    currentAnimeInfo?.title || 
+                                    infoData?.anime?.info?.name ||
+                                    infoData?.name || 
+                                    infoData?.title ||
+                                    'Unknown Anime';
+                    
+                    console.log('Setting title to:', animeName);
+                    document.getElementById('videoTitle').textContent = animeName;
+                    updateAnimeInfo();
+                    populateEpisodesList();
+                    await loadEpisode(episodes[0].episodeId, 'hd-1');
+                } else {
+                    throw new Error('No episodes available');
+                }
+                
+            } catch (error) {
+                console.error('Error opening anime:', error);
+                showNotification('Unable to load anime. Please try again later.', 'error');
+            }
+        }
+
+        function updateAnimeInfo() {
+            if (!currentAnimeInfo) {
+                console.log('No currentAnimeInfo available');
+                return;
+            }
+            
+            console.log('Updating anime info:', currentAnimeInfo?.info?.name || currentAnimeInfo?.name);
+            
+            // Update main info - use correct data structure
+            const titleElement = document.getElementById('videoTitle');
+            if (titleElement) {
+                const animeName = currentAnimeInfo?.info?.name || 
+                                currentAnimeInfo?.name || 
+                                currentAnimeInfo?.title || 
+                                'Unknown Anime';
+                titleElement.textContent = animeName;
+                console.log('Updated title to:', animeName);
+            }
+            
+            const episodesCountElement = document.getElementById('episodesCount');
+            if (episodesCountElement) {
+                episodesCountElement.textContent = `${episodes.length} episodes`;
+            }
+        }
+
+        function populateEpisodesList() {
+            const episodesList = document.getElementById('episodesList');
+            
+            if (!episodes.length) {
+                episodesList.innerHTML = '<div style="padding: 1rem; text-align: center; color: var(--text-muted);">No episodes available</div>';
+                return;
+            }
+            
+            episodesList.innerHTML = episodes.map((episode, index) => `
+                <div class="episode-item ${index === currentEpisodeIndex ? 'active' : ''}" 
+                     onclick="selectEpisode(${index})">
+                    <div class="episode-number">Episode ${episode.number || index + 1}</div>
+                    <div class="episode-title">${episode.title || `Episode ${index + 1}`}</div>
+                </div>
+            `).join('');
+        }
+
+        function updateEpisodeSelection() {
+            // Update episode info
+            const currentEpisode = episodes[currentEpisodeIndex];
+            if (currentEpisode) {
+                document.getElementById('videoEpisode').textContent = `Episode ${currentEpisode.number || currentEpisodeIndex + 1}`;
+            }
+            
+            // Update episode list selection
+            document.querySelectorAll('.episode-item').forEach((item, index) => {
+                if (index === currentEpisodeIndex) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            
+            // Update button states
+            document.getElementById('prevEpisode').disabled = currentEpisodeIndex === 0;
+            document.getElementById('nextEpisode').disabled = currentEpisodeIndex === episodes.length - 1;
+        }
+
+        function selectEpisode(index) {
+            if (index >= 0 && index < episodes.length && index !== currentEpisodeIndex) {
+                currentEpisodeIndex = index;
+                const episodeId = episodes[currentEpisodeIndex]?.episodeId;
+                if (episodeId) {
+                    const activeServer = document.querySelector('.server-btn.active')?.dataset.server || 'hd-1';
+                    loadEpisode(episodeId, activeServer);
+                    updateEpisodeSelection();
+                }
+            }
+        }
+
+        function openVideoModal() {
+            const modal = document.getElementById('videoModal');
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            
+            // Set initial title if we have anime info
+            const animeName = currentAnimeInfo?.info?.name || currentAnimeInfo?.name;
+            if (currentAnimeInfo && animeName) {
+                const titleElement = document.getElementById('videoTitle');
+                if (titleElement) {
+                    titleElement.textContent = animeName;
+                    console.log('Set title in openVideoModal:', animeName);
+                }
+            }
+        }
+
+        async function loadEpisode(episodeId, server = 'hd-1') {
+            const videoLoading = document.getElementById('videoLoading');
+            const videoPlayer = document.getElementById('videoPlayer');
+            const progressBar = document.getElementById('loadingProgress');
+            
+            // Show loading
+            videoLoading.style.display = 'flex';
+            progressBar.style.width = '0%';
+            
+            // Clean up previous HLS instance
+            if (currentHls) {
+                currentHls.destroy();
+                currentHls = null;
+            }
+
+            try {
+                console.log(`Loading episode ${episodeId} from ${server} server...`);
+                updateLoadingStatus(`Connecting to ${server.toUpperCase()} server...`);
+                progressBar.style.width = '20%';
+                
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+                
+                const response = await fetch(`${API_BASE_URL}/api/episode-srcs?id=${episodeId}&server=${server}`, {
+                    signal: controller.signal,
+                    headers: {
+                        'Accept': 'application/json',
+                        'Cache-Control': 'no-cache'
+                    }
+                });
+                
+                clearTimeout(timeoutId);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                updateLoadingStatus('Processing video sources...');
+                const data = await response.json();
+                progressBar.style.width = '50%';
+                
+                if (data.error) {
+                    throw new Error(data.message || 'Failed to load episode');
+                }
+                
+                if (data.sources && data.sources.length > 0) {
+                    // Store all video sources for quality selection
+                    currentVideoSources = data.sources;
+                    currentServer = server;
+                    
+                    // Setup quality options
+                    setupQualityOptions(data.sources);
+                    
+                    // Find the best source (prefer M3U8 for quality switching)
+                    const source = data.sources.find(s => s.isM3U8) || data.sources[0];
+                    updateLoadingStatus('Preparing video player...');
+                    progressBar.style.width = '80%';
+                    
+                    // Test if the source URL is accessible
+                    await testVideoSource(source.url);
+                    
+                    // Use proxy for video streaming to fix CORS issues
+                    updateLoadingStatus('Loading video file...');
+                    const proxyUrl = `${API_BASE_URL}/api/proxy-video?url=${encodeURIComponent(source.url)}`;
+                    
+                    // Use direct player to prevent HLS spamming issues
+                    setupDirectPlayerWithInternetMonitor(proxyUrl, videoPlayer, videoLoading, progressBar, data.headers);
+                    
+                    // Setup subtitles if available
+                    setupSubtitles(data.tracks || []);
+                    
+                    console.log(`Episode loaded successfully from ${server}`);
+                    updateEpisodeSelection();
+                    
+                    // Update active server button
+                    document.querySelectorAll('.server-btn').forEach(btn => {
+                        btn.classList.toggle('active', btn.dataset.server === server);
+                    });
+                    
+                    showNotification(`Playing from ${server.toUpperCase()} server`, 'success');
+                } else {
+                    throw new Error('No video sources available');
+                }
+            } catch (error) {
+                console.error(`Error loading from ${server}:`, error);
+                videoLoading.style.display = 'none';
+                
+                // Try next server automatically
+                const servers = ['hd-1', 'megacloud', 'hd-2'];
+                const currentIndex = servers.indexOf(server);
+                const nextServer = servers[currentIndex + 1];
+                
+                if (nextServer) {
+                    console.log(`Automatically trying ${nextServer} server...`);
+                    showNotification(`${server.toUpperCase()} failed. Trying ${nextServer.toUpperCase()}...`, 'warning');
+                    setTimeout(() => {
+                        loadEpisode(episodeId, nextServer);
+                    }, 2000);
+                } else {
+                    showNotification(`All servers failed. Please try again later.`, 'error');
+                }
+            }
+        }
+
+        async function testVideoSource(url) {
+            return new Promise((resolve, reject) => {
+                const timeout = setTimeout(() => {
+                    reject(new Error('Source test timeout'));
+                }, 5000);
+                
+                if (url.includes('.m3u8')) {
+                    // For HLS streams, just resolve as we'll handle errors in HLS setup
+                    clearTimeout(timeout);
+                    resolve();
+                } else {
+                    // For direct video, test with a HEAD request
+                    fetch(url, { method: 'HEAD', mode: 'no-cors' })
+                        .then(() => {
+                            clearTimeout(timeout);
+                            resolve();
+                        })
+                        .catch(() => {
+                            clearTimeout(timeout);
+                            resolve(); // Even if HEAD fails, try anyway
+                        });
+                }
+            });
+        }
+
+        function setupDirectPlayerWithInternetMonitor(sourceUrl, videoPlayer, videoLoading, progressBar, headers = {}) {
+            console.log('Setting up direct video player with internet monitoring');
+            
+            // Clean up any existing video
+            videoPlayer.pause();
+            videoPlayer.src = '';
+            videoPlayer.load();
+            
+            // Set video properties
+            videoPlayer.crossOrigin = 'anonymous';
+            videoPlayer.preload = 'metadata';
+            
+            // Get UI elements
+            const speedMeter = document.getElementById('speedMeter');
+            const bufferingIndicator = document.getElementById('bufferingIndicator');
+            
+            // Setup quality options - check if we have HLS with multiple qualities
+            if (sourceUrl.includes('.m3u8')) {
+                fetch(sourceUrl)
+                    .then(response => response.text())
+                    .then(m3u8Content => {
+                        const qualities = parseM3U8Qualities(m3u8Content, sourceUrl);
+                        if (qualities.length > 1) {
+                            setupQualityOptions(qualities);
+                            console.log('Found', qualities.length, 'quality levels');
+                        } else {
+                            setupQualityOptions([{ url: sourceUrl, quality: 'Auto', isM3U8: true }]);
+                        }
+                    })
+                    .catch(err => {
+                        console.log('Failed to parse M3U8:', err);
+                        setupQualityOptions([{ url: sourceUrl, quality: 'Auto', isM3U8: true }]);
+                    });
+            } else {
+                setupQualityOptions([{ url: sourceUrl, quality: 'Auto', isM3U8: false }]);
+            }
+            
+            // Set video source
+            try {
+                videoPlayer.src = sourceUrl;
+                videoPlayer.load();
+            } catch (error) {
+                console.error('Error setting video source:', error);
+                updateLoadingStatus('Failed to set video source');
+                return;
+            }
+            
+            // Internet speed monitoring
+            let startTime = Date.now();
+            let bytesLoaded = 0;
+            
+            const startSpeedMonitoring = () => {
+                speedMeter.style.display = 'block';
+                speedMeter.innerHTML = '<i class="fas fa-tachometer-alt"></i> Measuring...';
+                
+                speedMeterInterval = setInterval(() => {
+                    if (videoPlayer.buffered.length > 0) {
+                        const currentTime = Date.now();
+                        const duration = videoPlayer.duration || 1;
+                        const bufferedEnd = videoPlayer.buffered.end(videoPlayer.buffered.length - 1);
+                        const bufferedPercent = (bufferedEnd / duration) * 100;
+                        
+                        // Estimate download speed based on buffered content
+                        const timeDiff = (currentTime - startTime) / 1000;
+                        if (timeDiff > 1) {
+                            const estimatedBytes = bufferedEnd * 1000000; // Rough estimate
+                            const speed = estimatedBytes / timeDiff;
+                            const speedText = formatSpeed(speed);
+                            speedMeter.innerHTML = `<i class="fas fa-tachometer-alt"></i> ${speedText}`;
+                        }
+                    } else {
+                        speedMeter.innerHTML = '<i class="fas fa-tachometer-alt"></i> 0 KB/s';
+                    }
+                }, 1000);
+            };
+            
+            const stopSpeedMonitoring = () => {
+                if (speedMeterInterval) {
+                    clearInterval(speedMeterInterval);
+                    speedMeterInterval = null;
+                }
+                // Keep speed meter visible, just show 0
+                speedMeter.innerHTML = '<i class="fas fa-tachometer-alt"></i> 0 KB/s';
+            };
+            
+            // Initialize speed meter immediately
+            speedMeter.style.display = 'block';
+            speedMeter.innerHTML = '<i class="fas fa-tachometer-alt"></i> 0 KB/s';
+            
+            // Handle loading events
+            const handleLoadStart = () => {
+                progressBar.style.width = '90%';
+                updateLoadingStatus('Loading video...');
+                startSpeedMonitoring();
+            };
+            
+            const handleLoadedData = () => {
+                progressBar.style.width = '100%';
+                updateLoadingStatus('Video ready!');
+                setTimeout(() => {
+                    videoLoading.style.display = 'none';
+                }, 300);
+                cleanup();
+            };
+            
+            const handleCanPlay = () => {
+                progressBar.style.width = '100%';
+                setTimeout(() => {
+                    videoLoading.style.display = 'none';
+                }, 300);
+                cleanup();
+            };
+            
+            const handleWaiting = () => {
+                bufferingIndicator.style.display = 'block';
+                console.log('Video buffering...');
+            };
+            
+            const handleCanPlayThrough = () => {
+                bufferingIndicator.style.display = 'none';
+            };
+            
+            const handlePlaying = () => {
+                bufferingIndicator.style.display = 'none';
+            };
+            
+            const handleError = (e) => {
+                console.error('Direct video player error:', e);
+                updateLoadingStatus('Trying different approach...');
+                
+                // Try without crossOrigin attribute as fallback
+                if (videoPlayer.crossOrigin) {
+                    console.log('Retrying without crossOrigin');
+                    videoPlayer.crossOrigin = null;
+                    videoPlayer.src = sourceUrl;
+                    videoPlayer.load();
+                    return;
+                }
+                
+                cleanup();
+                videoLoading.style.display = 'none';
+                showNotification('Video failed to load. Please try a different server.', 'error');
+            };
+            
+            const cleanup = () => {
+                videoPlayer.removeEventListener('loadstart', handleLoadStart);
+                videoPlayer.removeEventListener('loadeddata', handleLoadedData);
+                videoPlayer.removeEventListener('canplay', handleCanPlay);
+                videoPlayer.removeEventListener('waiting', handleWaiting);
+                videoPlayer.removeEventListener('canplaythrough', handleCanPlayThrough);
+                videoPlayer.removeEventListener('playing', handlePlaying);
+                videoPlayer.removeEventListener('error', handleError);
+                stopSpeedMonitoring();
+            };
+            
+            // Add event listeners
+            videoPlayer.addEventListener('loadstart', handleLoadStart);
+            videoPlayer.addEventListener('loadeddata', handleLoadedData);
+            videoPlayer.addEventListener('canplay', handleCanPlay);
+            videoPlayer.addEventListener('waiting', handleWaiting);
+            videoPlayer.addEventListener('canplaythrough', handleCanPlayThrough);
+            videoPlayer.addEventListener('playing', handlePlaying);
+            videoPlayer.addEventListener('error', handleError);
+            
+            // Set timeout fallback
+            setTimeout(() => {
+                if (videoLoading.style.display !== 'none') {
+                    console.log('Video loading timeout');
+                    cleanup();
+                    videoLoading.style.display = 'none';
+                    showNotification('Video loading timeout. Please try a different server.', 'error');
+                }
+            }, 15000);
+        }
+
+        function setupDirectPlayer(sourceUrl, videoPlayer, videoLoading, progressBar, headers = {}) {
+            console.log('Setting up direct video player with URL:', sourceUrl);
+            
+            // Clean up any existing video
+            videoPlayer.pause();
+            videoPlayer.src = '';
+            videoPlayer.load();
+            
+            // Set video properties
+            videoPlayer.crossOrigin = 'anonymous';
+            videoPlayer.preload = 'metadata';
+            
+            // Set video source with proper handling
+            try {
+                videoPlayer.src = sourceUrl;
+                videoPlayer.load();
+            } catch (error) {
+                console.error('Error setting video source:', error);
+                updateLoadingStatus('Failed to set video source');
+                return;
+            }
+            
+            // Handle loading events
+            const handleLoadStart = () => {
+                progressBar.style.width = '90%';
+                updateLoadingStatus('Loading video...');
+            };
+            
+            const handleLoadedData = () => {
+                progressBar.style.width = '100%';
+                updateLoadingStatus('Video ready!');
+                setTimeout(() => {
+                    videoLoading.style.display = 'none';
+                }, 300);
+                cleanup();
+            };
+            
+            const handleCanPlay = () => {
+                progressBar.style.width = '100%';
+                setTimeout(() => {
+                    videoLoading.style.display = 'none';
+                }, 300);
+                cleanup();
+            };
+            
+            const handleError = (e) => {
+                console.error('Direct video player error:', e);
+                updateLoadingStatus('Trying different approach...');
+                
+                // Try without crossOrigin attribute as fallback
+                if (videoPlayer.crossOrigin) {
+                    console.log('Retrying without crossOrigin');
+                    videoPlayer.crossOrigin = null;
+                    videoPlayer.src = sourceUrl;
+                    videoPlayer.load();
+                    return;
+                }
+                
+                cleanup();
+                videoLoading.style.display = 'none';
+                showNotification('Video failed to load. Please try a different server.', 'error');
+            };
+            
+            const cleanup = () => {
+                videoPlayer.removeEventListener('loadstart', handleLoadStart);
+                videoPlayer.removeEventListener('loadeddata', handleLoadedData);
+                videoPlayer.removeEventListener('canplay', handleCanPlay);
+                videoPlayer.removeEventListener('error', handleError);
+            };
+            
+            // Add event listeners
+            videoPlayer.addEventListener('loadstart', handleLoadStart);
+            videoPlayer.addEventListener('loadeddata', handleLoadedData);
+            videoPlayer.addEventListener('canplay', handleCanPlay);
+            videoPlayer.addEventListener('error', handleError);
+            
+            // Set timeout fallback
+            setTimeout(() => {
+                if (videoLoading.style.display !== 'none') {
+                    console.log('Video loading timeout');
+                    cleanup();
+                    videoLoading.style.display = 'none';
+                    showNotification('Video loading timeout. Please try a different server.', 'error');
+                }
+            }, 10000);
+        }
+
+        function setupSubtitles(tracks) {
+            const subtitleControls = document.getElementById('subtitleControls');
+            const subtitleSelect = document.getElementById('subtitleSelect');
+            const videoPlayer = document.getElementById('videoPlayer');
+            
+            // Clear existing options and tracks
+            subtitleSelect.innerHTML = '<option value="">No Subtitles</option>';
+            
+            // Remove existing subtitle tracks
+            const existingTracks = videoPlayer.querySelectorAll('track');
+            existingTracks.forEach(track => track.remove());
+            
+            // Filter subtitle tracks (exclude thumbnails)
+            const subtitleTracks = tracks.filter(track => 
+                track.url && track.lang && track.lang !== 'thumbnails'
+            );
+            
+            if (subtitleTracks.length > 0) {
+                subtitleTracks.forEach(track => {
+                    // Add option to select
+                    const option = document.createElement('option');
+                    option.value = track.url;
+                    option.textContent = track.lang;
+                    subtitleSelect.appendChild(option);
+                    
+                    // Add track element to video
+                    const trackElement = document.createElement('track');
+                    trackElement.kind = 'subtitles';
+                    trackElement.label = track.lang;
+                    trackElement.srclang = track.lang.toLowerCase().substring(0, 2);
+                    trackElement.src = track.url;
+                    trackElement.default = false;
+                    videoPlayer.appendChild(trackElement);
+                });
+                
+                subtitleControls.style.display = 'flex';
+            } else {
+                subtitleControls.style.display = 'none';
+            }
+        }
+
+        function setupHLSPlayerWithQuality(sourceUrl, videoPlayer, videoLoading, progressBar, headers = {}) {
+            currentHls = new Hls({
+                debug: false,
+                enableWorker: false,
+                manifestLoadingMaxRetry: 1,
+                levelLoadingMaxRetry: 1,
+                fragLoadingMaxRetry: 1,
+                manifestLoadingRetryDelay: 2000,
+                levelLoadingRetryDelay: 2000,
+                fragLoadingRetryDelay: 2000,
+                manifestLoadingTimeOut: 10000,
+                levelLoadingTimeOut: 10000,
+                fragLoadingTimeOut: 10000,
+                lowLatencyMode: false,
+                startLevel: -1,
+                maxBufferLength: 30,
+                maxMaxBufferLength: 60,
+                xhrSetup: function(xhr, url) {
+                    // Add headers if provided
+                    if (headers.Referer) {
+                        xhr.setRequestHeader('Referer', headers.Referer);
+                    }
+                    xhr.setRequestHeader('Origin', window.location.origin);
+                    xhr.setRequestHeader('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');
+                    xhr.timeout = 10000;
+                }
+            });
+
+            let loadingProgress = 80;
+            let hasData = false;
+            let errorCount = 0;
+
+            currentHls.on(Hls.Events.MANIFEST_PARSED, () => {
+                loadingProgress = 90;
+                progressBar.style.width = loadingProgress + '%';
+                console.log('HLS manifest loaded');
+                hasData = true;
+                
+                // Setup quality levels from HLS manifest
+                setupHLSQualityLevels();
+            });
+
+            currentHls.on(Hls.Events.FRAG_LOADED, () => {
+                loadingProgress = Math.min(loadingProgress + 2, 95);
+                progressBar.style.width = loadingProgress + '%';
+                hasData = true;
+            });
+
+            videoPlayer.addEventListener('loadeddata', () => {
+                progressBar.style.width = '100%';
+                setTimeout(() => {
+                    videoLoading.style.display = 'none';
+                }, 300);
+                hasData = true;
+            });
+
+            videoPlayer.addEventListener('canplay', () => {
+                if (!hasData) {
+                    progressBar.style.width = '100%';
+                    setTimeout(() => {
+                        videoLoading.style.display = 'none';
+                    }, 300);
+                    hasData = true;
+                }
+            });
+
+            currentHls.on(Hls.Events.ERROR, (event, data) => {
+                console.error('HLS Error:', data);
+                errorCount++;
+                
+                if (data.fatal || errorCount >= 2) {
+                    console.log('HLS error limit reached, cleaning up');
+                    
+                    // Clean up current HLS
+                    if (currentHls) {
+                        currentHls.destroy();
+                        currentHls = null;
+                    }
+                    
+                    videoLoading.style.display = 'none';
+                    showNotification('Video failed to load. Please try a different server.', 'error');
+                }
+            });
+
+            // Timeout fallback
+            setTimeout(() => {
+                if (!hasData && videoLoading.style.display !== 'none') {
+                    console.log('HLS loading timeout');
+                    if (currentHls) {
+                        currentHls.destroy();
+                        currentHls = null;
+                    }
+                    videoLoading.style.display = 'none';
+                    showNotification('Video loading timeout. Please try a different server.', 'error');
+                }
+            }, 10000);
+
+            currentHls.loadSource(sourceUrl);
+            currentHls.attachMedia(videoPlayer);
+        }
+
+        function setupHLSPlayer(sourceUrl, videoPlayer, videoLoading, progressBar, headers = {}) {
+            // Fallback for backwards compatibility
+            setupHLSPlayerWithQuality(sourceUrl, videoPlayer, videoLoading, progressBar, headers);
+        }
+
+        function parseM3U8Qualities(m3u8Content, baseUrl) {
+            const qualities = [];
+            const lines = m3u8Content.split('\n');
+            
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (line.startsWith('#EXT-X-STREAM-INF:')) {
+                    const nextLine = lines[i + 1]?.trim();
+                    if (nextLine && !nextLine.startsWith('#')) {
+                        // Extract resolution and bandwidth
+                        const resolutionMatch = line.match(/RESOLUTION=(\d+)x(\d+)/);
+                        const bandwidthMatch = line.match(/BANDWIDTH=(\d+)/);
+                        
+                        let quality = 'Unknown';
+                        if (resolutionMatch) {
+                            const height = resolutionMatch[2];
+                            quality = `${height}p`;
+                            if (bandwidthMatch) {
+                                const bandwidth = Math.round(parseInt(bandwidthMatch[1]) / 1000);
+                                quality += ` (${bandwidth}k)`;
+                            }
+                        }
+                        
+                        // Build full URL
+                        let qualityUrl = nextLine;
+                        if (!qualityUrl.startsWith('http')) {
+                            const baseUrlParts = baseUrl.split('/');
+                            baseUrlParts.pop();
+                            qualityUrl = baseUrlParts.join('/') + '/' + qualityUrl;
+                        }
+                        
+                        qualities.push({
+                            url: qualityUrl,
+                            quality: quality,
+                            isM3U8: true,
+                            height: resolutionMatch ? parseInt(resolutionMatch[2]) : 0
+                        });
+                    }
+                }
+            }
+            
+            // Sort by quality (highest first)
+            qualities.sort((a, b) => b.height - a.height);
+            
+            return qualities;
+        }
+
+        function setupQualityOptions(sources) {
+            const qualityControls = document.getElementById('qualityControls');
+            const qualitySelect = document.getElementById('qualitySelect');
+            
+            if (!qualityControls || !qualitySelect) return;
+            
+            // Clear existing options
+            qualitySelect.innerHTML = '';
+            
+            // Always add Auto option
+            const autoOption = document.createElement('option');
+            autoOption.value = 'auto';
+            autoOption.textContent = 'Auto';
+            qualitySelect.appendChild(autoOption);
+            
+            if (sources && sources.length > 1) {
+                // Filter sources by quality if available
+                const qualityLevels = [];
+                
+                sources.forEach((source, index) => {
+                    let qualityLabel = `Quality ${index + 1}`;
+                    
+                    // Try to extract quality from URL or metadata
+                    if (source.quality) {
+                        qualityLabel = source.quality;
+                    } else if (source.url) {
+                        // Look for common quality indicators in URL
+                        if (source.url.includes('1080') || source.url.includes('1920')) {
+                            qualityLabel = '1080p';
+                        } else if (source.url.includes('720') || source.url.includes('1280')) {
+                            qualityLabel = '720p';
+                        } else if (source.url.includes('480') || source.url.includes('854')) {
+                            qualityLabel = '480p';
+                        } else if (source.url.includes('360') || source.url.includes('640')) {
+                            qualityLabel = '360p';
+                        }
+                    }
+                    
+                    qualityLevels.push({
+                        index: index,
+                        label: qualityLabel,
+                        source: source
+                    });
+                });
+                
+                // Sort by quality (higher first)
+                qualityLevels.sort((a, b) => {
+                    const aNum = parseInt(a.label) || 0;
+                    const bNum = parseInt(b.label) || 0;
+                    return bNum - aNum;
+                });
+                
+                // Add options to select
+                qualityLevels.forEach(level => {
+                    const option = document.createElement('option');
+                    option.value = level.index;
+                    option.textContent = level.label;
+                    qualitySelect.appendChild(option);
+                });
+                
+                qualityControls.style.display = 'flex';
+                currentVideoSources = sources;
+                console.log('Quality selector shown with', qualityLevels.length, 'options');
+            } else {
+                qualityControls.style.display = 'none';
+                currentVideoSources = sources || [];
+            }
+        }
+
+        function setupHLSQualityLevels() {
+            if (!currentHls || !currentHls.levels) return;
+            
+            const qualitySelect = document.getElementById('qualitySelect');
+            const qualityControls = document.getElementById('qualityControls');
+            
+            // Clear existing options except auto
+            qualitySelect.innerHTML = '<option value="auto">Auto</option>';
+            
+            if (currentHls.levels.length > 1) {
+                // Add quality levels from HLS manifest
+                currentHls.levels.forEach((level, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    
+                    // Create quality label
+                    let qualityLabel = `${level.height}p`;
+                    if (level.bitrate) {
+                        qualityLabel += ` (${Math.round(level.bitrate / 1000)}k)`;
+                    }
+                    
+                    option.textContent = qualityLabel;
+                    qualitySelect.appendChild(option);
+                });
+                
+                qualityControls.style.display = 'flex';
+            }
+        }
+
+        function switchVideoQuality(quality) {
+            const videoPlayer = document.getElementById('videoPlayer');
+            const currentTime = videoPlayer.currentTime;
+            const isPaused = videoPlayer.paused;
+            
+            if (quality === 'auto') {
+                showNotification('Quality set to Auto', 'success');
+            } else if (currentVideoSources && currentVideoSources.length > 1) {
+                // Switch to different source for non-HLS videos
+                const sourceIndex = parseInt(quality);
+                if (sourceIndex >= 0 && sourceIndex < currentVideoSources.length) {
+                    const newSource = currentVideoSources[sourceIndex];
+                    const proxyUrl = `${API_BASE_URL}/api/proxy-video?url=${encodeURIComponent(newSource.url)}`;
+                    
+                    // Store current playback position
+                    videoPlayer.src = proxyUrl;
+                    videoPlayer.load();
+                    
+                    // Restore playback position when ready
+                    const restorePosition = () => {
+                        if (currentTime > 0) {
+                            videoPlayer.currentTime = currentTime;
+                        }
+                        if (!isPaused) {
+                            videoPlayer.play().catch(console.error);
+                        }
+                        videoPlayer.removeEventListener('loadeddata', restorePosition);
+                    };
+                    
+                    videoPlayer.addEventListener('loadeddata', restorePosition);
+                    
+                    // Extract quality label for notification
+                    let qualityLabel = `Quality ${sourceIndex + 1}`;
+                    if (newSource.quality) {
+                        qualityLabel = newSource.quality;
+                    }
+                    
+                    showNotification(`Quality changed to ${qualityLabel}`, 'success');
+                }
+            } else {
+                showNotification('Quality switching not available for this video', 'info');
+            }
+        }
+
+        function formatSpeed(bytesPerSecond) {
+            if (bytesPerSecond < 1024) {
+                return Math.round(bytesPerSecond) + ' B/s';
+            } else if (bytesPerSecond < 1024 * 1024) {
+                return Math.round(bytesPerSecond / 1024) + ' KB/s';
+            } else {
+                return (bytesPerSecond / (1024 * 1024)).toFixed(1) + ' MB/s';
+            }
+        }
+
+        function closeVideoModal() {
+            const modal = document.getElementById('videoModal');
+            const videoPlayer = document.getElementById('videoPlayer');
+            const speedMeter = document.getElementById('speedMeter');
+            const bufferingIndicator = document.getElementById('bufferingIndicator');
+            
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+            
+            // Stop video and clean up
+            videoPlayer.pause();
+            videoPlayer.src = '';
+            
+            if (currentHls) {
+                currentHls.destroy();
+                currentHls = null;
+            }
+            
+            // Clean up speed monitoring
+            if (speedMeterInterval) {
+                clearInterval(speedMeterInterval);
+                speedMeterInterval = null;
+            }
+            
+            // Hide buffering indicator only, keep speed meter visible
+            if (bufferingIndicator) bufferingIndicator.style.display = 'none';
+            if (speedMeter) {
+                speedMeter.innerHTML = '<i class="fas fa-tachometer-alt"></i> 0 KB/s';
+                speedMeter.style.display = 'block';
+            }
+            
+            // Reset state
+            currentAnimeId = null;
+            currentAnimeInfo = null;
+            currentEpisodeIndex = 0;
+            episodes = [];
+            currentVideoSources = [];
+            currentServer = 'hd-1';
+            
+            // Reset server selection
+            document.querySelectorAll('.server-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector('.server-btn[data-server="hd-1"]')?.classList.add('active');
+            
+            // Hide quality controls
+            const qualityControls = document.getElementById('qualityControls');
+            if (qualityControls) {
+                qualityControls.style.display = 'none';
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            // Remove existing notifications
+            document.querySelectorAll('.notification').forEach(n => n.remove());
+            
+            const notification = document.createElement('div');
+            const colors = {
+                info: 'var(--primary)',
+                success: 'var(--success)',
+                warning: 'var(--warning)',
+                error: 'var(--error)'
+            };
+            
+            notification.className = 'notification';
+            notification.style.cssText = `
+                position: fixed;
+                top: 80px;
+                right: 1rem;
+                background: ${colors[type] || colors.info};
+                color: white;
+                padding: 1rem 1.25rem;
+                border-radius: var(--radius-lg);
+                z-index: 3000;
+                max-width: 400px;
+                font-weight: 600;
+                box-shadow: var(--shadow-lg);
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Remove after 4 seconds
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => notification.remove(), 300);
+            }, 4000);
+        }
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
