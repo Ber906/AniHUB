@@ -1,16 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AniHUB - Premium Anime Streaming</title>
-    <script>
-        // Redirect to the enhanced version
-        window.location.href = '/anihub-enhanced.html';
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AniHUB - Premium Anime Streaming</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .container {
+      animation: fadeIn 2s ease-in-out;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      animation: glow 2s infinite alternate;
+    }
+
+    p {
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+    }
+
+    .loader {
+      border: 6px solid rgba(255, 255, 255, 0.2);
+      border-top: 6px solid #fff;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      margin: 20px auto;
+      animation: spin 1s linear infinite;
+    }
+
+    .countdown {
+      font-size: 1.3rem;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg);}
+      100% { transform: rotate(360deg);}
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+
+    @keyframes glow {
+      from { text-shadow: 0 0 10px #fff, 0 0 20px #2575fc, 0 0 30px #6a11cb; }
+      to { text-shadow: 0 0 20px #fff, 0 0 40px #2575fc, 0 0 60px #6a11cb; }
+    }
+
+    a {
+      color: #ffd369;
+      text-decoration: none;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
-    <p>Redirecting to AniHUB...</p>
-    <p>If you're not redirected automatically, <a href="/anihub-enhanced.html">click here</a>.</p>
+  <div class="container">
+    <h1>✨ Welcome to AniHUB ✨</h1>
+    <p>Please wait while we redirect you to our server...</p>
+    <div class="loader"></div>
+    <p class="countdown">Redirecting in <span id="timer">10</span> seconds...</p>
+    <p>If you are not redirected automatically, <a href="/server.html">click here</a>.</p>
+  </div>
+
+  <script>
+    let timeLeft = 10;
+    const timerElement = document.getElementById("timer");
+
+    const countdown = setInterval(() => {
+      timeLeft--;
+      timerElement.textContent = timeLeft;
+      if (timeLeft <= 0) {
+        clearInterval(countdown);
+        window.location.href = "/server.html";
+      }
+    }, 1000);
+  </script>
 </body>
 </html>
