@@ -539,7 +539,8 @@ app.get('/api/proxy-video', async (req, res) => {
         
     } catch (error) {
         // Only log errors for non-segment requests to reduce spam
-        if (!url.includes('seg-') && !url.includes('.ts')) {
+        const { url } = req.query;
+        if (url && !url.includes('seg-') && !url.includes('.ts')) {
             console.error('Proxy error for', url.substring(url.lastIndexOf('/') + 1), ':', error.message);
         }
         res.status(500).json({ error: 'Failed to proxy video stream' });
